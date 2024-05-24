@@ -1,4 +1,4 @@
-"""VSLBase Baseline for Ego4D Episodic Memory -- Natural Language Queries.
+"""VSLNet Baseline for Ego4D Episodic Memory -- Natural Language Queries.
 """
 import torch
 import torch.nn as nn
@@ -11,6 +11,7 @@ from model.layers import (
     CQAttention,
     CQConcatenate,
     ConditionedPredictor,
+    HighLightLayer,
     BertEmbedding,
 )
 
@@ -124,12 +125,19 @@ class VSLNet(nn.Module):
         video_features = self.feature_encoder(video_features, mask=v_mask)
         features = self.cq_attention(video_features, query_features, v_mask, q_mask)
         features = self.cq_concat(features, query_features, q_mask)
+        h_score = 0
+        features = features * h_score.unsqueeze(2)
         start_logits, end_logits = self.predictor(features, mask=v_mask)
-        return start_logits, end_logits
+        return h_score, start_logits, end_logits
 
     def extract_index(self, start_logits, end_logits):
         return self.predictor.extract_index(
             start_logits=start_logits, end_logits=end_logits
+        )
+
+    def compute_highlight_loss(self, scores, labels, mask):
+        return self.highlight_layer.compute_loss(
+            scores=scores, labels=labels, mask=mask
         )
 
     def compute_loss(self, start_logits, end_logits, start_labels, end_labels):
