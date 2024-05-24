@@ -126,7 +126,7 @@ class VSLNet(nn.Module):
         features = self.cq_attention(video_features, query_features, v_mask, q_mask)
         features = self.cq_concat(features, query_features, q_mask)
         h_score = 0
-        features = features * h_score.unsqueeze(2)
+        features = features
         start_logits, end_logits = self.predictor(features, mask=v_mask)
         return h_score, start_logits, end_logits
 
