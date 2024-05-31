@@ -315,6 +315,16 @@ class MultiHeadAttentionBlock(nn.Module):
         return output
 
 
+class BERTEncoder(nn.Module):
+    def __init__(self, bert_model_name='bert-base-uncased'):
+        super(BERTEncoder, self).__init__()
+        from transformers import BertModel
+        self.bert = BertModel.from_pretrained(bert_model_name)
+
+    def forward(self, input_ids, attention_mask):
+        outputs = self.bert(input_ids, attention_mask=attention_mask)
+        return outputs.last_hidden_state
+
 class FeatureEncoder(nn.Module):
     def __init__(
         self, dim, num_heads, max_pos_len, kernel_size=7, num_layers=4, drop_rate=0.0
