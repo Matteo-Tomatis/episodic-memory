@@ -123,7 +123,7 @@ class VSLNet(nn.Module):
         else:
             query_features = self.embedding_net(word_ids, char_ids)
 
-        query_features = self.feature_encoder(query_features, mask=q_mask)
+        query_features = self.BERTEncoder(query_features, attention_mask=q_mask)
         video_features = self.feature_encoder(video_features, mask=v_mask)
         features = self.cq_attention(video_features, query_features, v_mask, q_mask)
         features = self.cq_concat(features, query_features, q_mask)
