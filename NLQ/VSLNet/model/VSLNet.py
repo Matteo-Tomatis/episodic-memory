@@ -13,6 +13,7 @@ from model.layers import (
     ConditionedPredictor,
     HighLightLayer,
     BertEmbedding,
+    BERTEncoder,
 )
 
 
