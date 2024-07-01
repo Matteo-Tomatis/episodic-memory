@@ -3,7 +3,6 @@
 import torch
 import torch.nn as nn
 from transformers import AdamW, get_linear_schedule_with_warmup
-from transformers import BertModel
 
 from model.layers import (
     Embedding,
@@ -14,7 +13,6 @@ from model.layers import (
     ConditionedPredictor,
     HighLightLayer,
     BertEmbedding,
-    BERTEncoder,
 )
 
 
@@ -60,7 +58,6 @@ class VSLNet(nn.Module):
             dim=configs.dim,
             drop_rate=configs.drop_rate,
         )
-        self.BERTEncoder = BERTEncoder()
         self.feature_encoder = FeatureEncoder(
             dim=configs.dim,
             num_heads=configs.num_heads,
@@ -126,7 +123,7 @@ class VSLNet(nn.Module):
         else:
             query_features = self.embedding_net(word_ids, char_ids)
 
-        query_features = self.BERTEncoder(query_features, attention_mask=q_mask)
+        query_features = self.feature_encoder(query_features, mask=q_mask)
         video_features = self.feature_encoder(video_features, mask=v_mask)
         features = self.cq_attention(video_features, query_features, v_mask, q_mask)
         features = self.cq_concat(features, query_features, q_mask)
