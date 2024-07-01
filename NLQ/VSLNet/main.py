@@ -88,6 +88,20 @@ def main(configs, parser):
 
     # train and test
     if configs.mode.lower() == "train":
+        # Build model
+        model = VSLNet(
+            configs=configs, word_vectors=dataset.get("word_vector", None)
+        ).to(device)
+    
+        if configs.pretrained_model:
+            # Load pre-trained weights
+            if not os.path.exists(configs.pretrained_weights):
+                raise ValueError(f"Pretrained weights directory {configs.pretrained_weights} does not exist")
+            
+            # Load pre-trained weights into the model
+            model.load_state_dict(torch.load(configs.pretrained_weights))
+            print(f"Loaded pretrained weights from {configs.pretrained_weights}")
+    
         if not os.path.exists(model_dir):
             os.makedirs(model_dir)
         eval_period = num_train_batches // 2
@@ -97,12 +111,11 @@ def main(configs, parser):
             sort_keys=True,
             save_pretty=True,
         )
-        # build model
-        model = VSLNet(
-            configs=configs, word_vectors=dataset.get("word_vector", None)
-        ).to(device)
+    
+        # Build optimizer and scheduler
         optimizer, scheduler = build_optimizer_and_scheduler(model, configs=configs)
-        # start training
+    
+        # Start training loop
         best_metric = -1.0
         score_writer = open(
             os.path.join(model_dir, "eval_results.txt"), mode="w", encoding="utf-8"
@@ -179,7 +192,7 @@ def main(configs, parser):
                     writer.add_scalar("Loss/Highlight", highlight_loss.detach().cpu(), global_step)
                     writer.add_scalar("Loss/Highlight (*lambda)", (configs.highlight_lambda * highlight_loss.detach().cpu()), global_step)
                     writer.add_scalar("LR", optimizer.param_groups[0]["lr"], global_step)
-
+    
                 # evaluate
                 if (
                     global_step % eval_period == 0
@@ -209,7 +222,7 @@ def main(configs, parser):
                         for name, value in score_dict.items():
                             kk = name.replace("\n", " ")
                             writer.add_scalar(f"Val/{kk}", value, global_step)
-
+    
                     score_writer.write(score_str)
                     score_writer.flush()
                     # Recall@1, 0.3 IoU overlap --> best metric.
