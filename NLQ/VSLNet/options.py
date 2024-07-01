@@ -203,5 +203,17 @@ def read_command_line():
         default=None,
         help="A list of splits to remove empty queries from. Valid values for the list are: ['train', 'val']",  # noqa
     )
+    parser.add_argument(
+        "--pretrained_model",
+        type=str,
+        default=False,
+        help="Do you have pretrained weights?", 
+    )
+    parser.add_argument(
+        "--pretrained_weights",
+        type=str,
+        default=None,
+        help="link to pretrained weigths", 
+    )
     configs = parser.parse_args()
     return configs, parser
