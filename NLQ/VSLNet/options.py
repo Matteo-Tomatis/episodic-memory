@@ -205,9 +205,9 @@ def read_command_line():
     )
     parser.add_argument(
         "--pretrained_model",
-        type=str,
+        action="store_true",
         default=False,
-        help="Do you have pretrained weights?", 
+        help="Do you have pretrained weights?",
     )
     parser.add_argument(
         "--pretrained_weights",
