@@ -59,6 +59,7 @@ class VSLNet(nn.Module):
             dim=configs.dim,
             drop_rate=configs.drop_rate,
         )
+        self.bert_encoder = BERTEncoder()
         self.feature_encoder = FeatureEncoder(
             dim=configs.dim,
             num_heads=configs.num_heads,
