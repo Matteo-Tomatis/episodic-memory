@@ -3,6 +3,7 @@
 import torch
 import torch.nn as nn
 from transformers import AdamW, get_linear_schedule_with_warmup
+from transformers import BertModel
 
 from model.layers import (
     Embedding,
@@ -59,7 +60,7 @@ class VSLNet(nn.Module):
             dim=configs.dim,
             drop_rate=configs.drop_rate,
         )
-        self.bert_encoder = BERTEncoder()
+        self.BERTEncoder = BertModel.from_pretrained("bert-base-uncased")
         self.feature_encoder = FeatureEncoder(
             dim=configs.dim,
             num_heads=configs.num_heads,
