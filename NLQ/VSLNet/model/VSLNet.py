@@ -60,7 +60,7 @@ class VSLNet(nn.Module):
             dim=configs.dim,
             drop_rate=configs.drop_rate,
         )
-        self.BERTEncoder = BertModel.from_pretrained("bert-base-uncased")
+        self.BERTEncoder = BERTEncoder()
         self.feature_encoder = FeatureEncoder(
             dim=configs.dim,
             num_heads=configs.num_heads,
