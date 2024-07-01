@@ -6,6 +6,7 @@ import math
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from transformers import BertModel
 
 
 def mask_logits(inputs, mask, mask_value=-1e30):
@@ -317,7 +318,6 @@ class MultiHeadAttentionBlock(nn.Module):
 class BERTEncoder(nn.Module):
     def __init__(self, bert_model_name='bert-base-uncased'):
         super(BERTEncoder, self).__init__()
-        from transformers import BertModel
         self.bert = BertModel.from_pretrained(bert_model_name)
 
     def forward(self, input_ids, attention_mask):
