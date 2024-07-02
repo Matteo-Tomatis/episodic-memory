@@ -231,6 +231,8 @@ def main(configs, parser):
                                 "{}_{}.t7".format(configs.model_name, global_step),
                             ),
                         )
+                        # Salva i pesi del modello
+                        torch.save(model.state_dict(), 'model_weights.pth')
                         # only keep the top-3 model checkpoints
                         filter_checkpoints(model_dir, suffix="t7", max_to_keep=3)
                     model.train()
