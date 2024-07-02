@@ -93,6 +93,17 @@ def main(configs, parser):
             configs=configs, word_vectors=dataset.get("word_vector", None)
         ).to(device)
     
+        eval_period = num_train_batches // 2
+        save_json(
+            vars(configs),
+            os.path.join(model_dir, "configs.json"),
+            sort_keys=True,
+            save_pretty=True,
+        )
+    
+        # Build optimizer and scheduler
+        optimizer, scheduler = build_optimizer_and_scheduler(model, configs=configs)
+        
         if configs.pretrained_model:
             # Load pre-trained weights
             if not os.path.exists(configs.pretrained_weights):
@@ -104,17 +115,7 @@ def main(configs, parser):
     
         if not os.path.exists(model_dir):
             os.makedirs(model_dir)
-        eval_period = num_train_batches // 2
-        save_json(
-            vars(configs),
-            os.path.join(model_dir, "configs.json"),
-            sort_keys=True,
-            save_pretty=True,
-        )
-    
-        # Build optimizer and scheduler
-        optimizer, scheduler = build_optimizer_and_scheduler(model, configs=configs)
-    
+
         # Start training loop
         best_metric = -1.0
         score_writer = open(
